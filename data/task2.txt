@@ -1,0 +1,58 @@
+Write your Task 2 answers in this file
+-- task 2.2 (extracting Australia accommodations)
+db.listings_and_reviews.aggregate([
+{
+    $match: { "address.country" : "Australia" }
+},
+{
+    $out: "listings"
+}
+]);
+
+-- task 2.3 (extracting reviews)
+db.listings.aggregate([
+{
+    $unwind: "$reviews"
+},
+{
+    $project:
+    {   
+        _id: "$reviews._id",
+        date: "$reviews.date",
+        listing_id: "$reviews.listing_id",
+        reviewer_name: { $replaceAll: { input: "$reviews.reviewer_name", find: ",", replacement: ""}},
+        comments: { $replaceAll: { input: "$reviews.comments", find: "\n", replacement: ""}},
+    }
+},
+{
+    $project:
+    {   
+        _id: "$_id",
+        date: "$date",
+        listing_id: "$listing_id",
+        reviewer_name: "reviewer_name",
+        comments: { $replaceAll: { input: "$comments", find: "\r", replacement: ""}},
+    }
+},
+{
+    $out: "reviews"
+}
+]);
+
+-- task 2.4 (deleting reviews attribute from listings)
+db.listings.update(
+{
+    
+},
+{ $unset: {reviews:1}}, false, true
+);
+
+-- task 2.5 (exporting reviews collection as CSV file)
+mongoexport --host localhost 
+            --db bedandbreakfast 
+            --collection reviews 
+            --csv 
+            --out reviews.csv 
+            --fields "date","listing_id","reviewer_name","comments"
+
+--task 2.6 
