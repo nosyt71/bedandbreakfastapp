@@ -32,11 +32,9 @@ create table reviews (
     primary key(id)
 );
 
-BULK INSERT users
-FROM C:\Users\Huawei\paf_assessment_template\bedandbreakfastapp\data\task1.sql
-WITH (firstrow = 2,
-      fieldterminator = ',',
-      rowterminator = '\n',
-      ROWS_PER_BATCH = 10000,
-      TABLOCK
-      )
+LOAD DATA LOCAL INFILE C:\Users\Huawei\paf_assessment_template\bedandbreakfastapp\data\task1.sql
+INTO TABLE users
+FIELDS TERMINATED BY ','
+LINES TERMINATED BY '\n'
+IGNORE 1 ROWS
+('date','listing_id','reviewer_name','comments);
